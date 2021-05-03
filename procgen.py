@@ -2,6 +2,7 @@ from __future__ import annotations
 import random
 from typing import Iterator, List, Tuple, TYPE_CHECKING
 import tcod
+import entity_factories
 from game_map import GameMap
 import tile_types
 
@@ -36,6 +37,19 @@ class RectangularRoom:
             and self.y2 >= other.y1
         )
 
+def place_entities(room: RectangularRoom, dungeon: GameMap, maximum_monsters: int) -> None:
+    number_of_monsters = random.randint(0, maximum_monsters)
+
+    for i in range(number_of_monsters):
+        x = random.randint(room.x1 + 1, room.x2 - 1)
+        y = random.randint(room.y1 + 1, room.y2 - 1)
+
+        if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
+            if random.random() < 0.8:
+                entity_factories.orc.spawn(dungeon, x, y)
+            else:
+                entity_factories.troll.spawn(dungeon, x, y)
+
 
 def tunnel_between(start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
   
@@ -60,40 +74,40 @@ def generate_dungeon(
    room_max_size: int,
    map_width: int,
    map_height: int,
+   max_monsters_per_room: int,
    player: Entity,
 ) -> GameMap:
-   """Generate a new dungeon map."""
-   dungeon = GameMap(map_width, map_height, entities=[player])
+    """Generate a new dungeon map."""
+    dungeon = GameMap(map_width, map_height, entities=[player])
 
-   rooms: List[RectangularRoom] = []
+    rooms: List[RectangularRoom] = []
 
-   for r in range(max_rooms):
-       room_width = random.randint(room_min_size, room_max_size)
-       room_height = random.randint(room_min_size, room_max_size)
+    for r in range(max_rooms):
+        room_width = random.randint(room_min_size, room_max_size)
+        room_height = random.randint(room_min_size, room_max_size)
 
-       x = random.randint(0, dungeon.width - room_width - 1)
-       y = random.randint(0, dungeon.height - room_height - 1)
+        x = random.randint(0, dungeon.width - room_width - 1)
+        y = random.randint(0, dungeon.height - room_height - 1)
 
-       # "RectangularRoom" class makes rectangles easier to work with
-       new_room = RectangularRoom(x, y, room_width, room_height)
+        # "RectangularRoom" class makes rectangles easier to work with
+        new_room = RectangularRoom(x, y, room_width, room_height)
 
-       # Run through the other rooms and see if they intersect with this one.
-       if any(new_room.intersects(other_room) for other_room in rooms):
-           continue  # This room intersects, so go to the next attempt.
-       # If there are no intersections then the room is valid.
+        # Run through the other rooms and see if they intersect with this one.
+        if any(new_room.intersects(other_room) for other_room in rooms):
+            continue  # This room intersects, so go to the next attempt.
+        # If there are no intersections then the room is valid.
 
-       # Dig out this rooms inner area.
-       dungeon.tiles[new_room.inner] = tile_types.floor
+        # Dig out this rooms inner area.
+        dungeon.tiles[new_room.inner] = tile_types.floor
 
-       if len(rooms) == 0:
-           # The first room, where the player starts.
-           player.x, player.y = new_room.center
-       else:  # All rooms after the first.
-           # Dig out a tunnel between this room and the previous one.
-           for x, y in tunnel_between(rooms[-1].center, new_room.center):
-               dungeon.tiles[x, y] = tile_types.floor
-
-       # Finally, append the new room to the list.
-       rooms.append(new_room)
-
-   return dungeon
+        if len(rooms) == 0:
+            # The first room, where the player starts.
+            player.x, player.y = new_room.center
+        else:  # All rooms after the first.
+            # Dig out a tunnel between this room and the previous one.
+            for x, y in tunnel_between(rooms[-1].center, new_room.center):
+                dungeon.tiles[x, y] = tile_types.floor
+        place_entities(new_room, dungeon, max_monsters_per_room)
+        # Finally, append the new room to the list.
+        rooms.append(new_room)
+    return dungeon
