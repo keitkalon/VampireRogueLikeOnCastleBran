@@ -1,26 +1,31 @@
-def create_board(width, height):
-    '''
-    Creates a new game board based on input parameters.
+from typing import Set, Iterable, Any
+from tcod.context import Context
+from tcod.console import Console
 
-    Args:
-    int: The width of the board
-    int: The height of the board
+from actions import EscapeAction, MovementAction
+from entity import Entity
+from input_handlers import EventHandler
 
-    Returns:
-    list: Game board
-    '''
-    pass
+class Engine:
+    def __init__(self, entities: Set[Entity], event_handler: EventHandler, player: Entity):
+        self.entities = entities
+        self.event_handler = event_handler
+        self.player = player
 
+    def handle_events(self, events: Iterable[Any]) -> None:
+        for event in events:
+            actions = self.event_handler.dispatch(event)
 
-def put_player_on_board(board, player):
-    '''
-    Modifies the game board by placing the player icon at its coordinates.
+            if action is None:
+                continue
+            if isinstance(action, MovementAction):
+                self.player.move(dx=action.dx, dy=action.dy)
+            elif isinstance(action, EscapeAction):
+                raise SystemExit()
 
-    Args:
-    list: The game board
-    dictionary: The player information containing the icon and coordinates
+    def render(self, console: Console, context: Context) -> None:
+        for entity in self.entities:
+            console.print(entity.x, entity.y, entity.char, fg=entity.color)
 
-    Returns:
-    Nothing
-    '''
-    pass
+        context.present(console)
+        console.clear()
