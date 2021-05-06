@@ -8,13 +8,12 @@ if TYPE_CHECKING:
     from game_map import GameMap
 
 
-class BaseComponent:    
+class BaseComponent:
     parent: Entity  # Owning entity instance.
 
     @property
     def gamemap(self) -> GameMap:
         return self.parent.gamemap
-
 
     @property
     def engine(self) -> Engine:

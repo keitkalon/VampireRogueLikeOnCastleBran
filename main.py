@@ -1,16 +1,18 @@
 import copy
 import traceback
+
 import tcod
 
 import color
 from engine import Engine
 import entity_factories
-
 from procgen import generate_dungeon
 
-def main():
+
+def main() -> None:
     screen_width = 80
-    screen_height = 55
+    screen_height = 50
+
     map_width = 80
     map_height = 43
 
@@ -20,15 +22,14 @@ def main():
 
     max_monsters_per_room = 2
     max_items_per_room = 2
-    
+
     tileset = tcod.tileset.load_tilesheet(
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
-    
     player = copy.deepcopy(entity_factories.player)
+
     engine = Engine(player=player)
-    
 
     engine.game_map = generate_dungeon(
         max_rooms=max_rooms,
@@ -40,23 +41,21 @@ def main():
         max_items_per_room=max_items_per_room,
         engine=engine,
     )
-
     engine.update_fov()
 
     engine.message_log.add_message(
-        "Let's explore the darknes from the Dungeon of Bran Castle!", color.welcome_text
+        "Hello and welcome, adventurer, to yet another dungeon!", color.welcome_text
     )
-
 
     with tcod.context.new_terminal(
         screen_width,
         screen_height,
         tileset=tileset,
-        title="Welcome to Bran Castle Dungeon",
+        title="Yet Another Roguelike Tutorial",
         vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
-        while True:  
+        while True:
             root_console.clear()
             engine.event_handler.on_render(console=root_console)
             context.present(root_console)
@@ -68,8 +67,8 @@ def main():
             except Exception:  # Handle exceptions in game.
                 traceback.print_exc()  # Print error to stderr.
                 # Then print the error to the message log.
-                engine.message_log.add_message(traceback.format_exc(), color.error)         
- 
+                engine.message_log.add_message(traceback.format_exc(), color.error)
+
 
 if __name__ == "__main__":
     main()
