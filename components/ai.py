@@ -7,18 +7,16 @@ import tcod
 
 from actions import Action, MeleeAction, MovementAction, WaitAction
 
-
 if TYPE_CHECKING:
     from entity import Actor
 
+
 class BaseAI(Action):
-    entity: Actor
     def perform(self) -> None:
         raise NotImplementedError()
 
     def get_path_to(self, dest_x: int, dest_y: int) -> List[Tuple[int, int]]:
         """Compute and return a path to the target position.
-
         If there is no valid path then returns an empty list.
         """
         # Copy the walkable array.
@@ -44,6 +42,7 @@ class BaseAI(Action):
 
         # Convert from List[List[int]] to List[Tuple[int, int]].
         return [(index[0], index[1]) for index in path]
+
 
 class HostileEnemy(BaseAI):
     def __init__(self, entity: Actor):

@@ -1,13 +1,18 @@
 from __future__ import annotations
+
 import random
 from typing import Iterator, List, Tuple, TYPE_CHECKING
+
 import tcod
+
 import entity_factories
 from game_map import GameMap
 import tile_types
 
+
 if TYPE_CHECKING:
-    from entity import Engine
+    from engine import Engine
+
 
 class RectangularRoom:
     def __init__(self, x: int, y: int, width: int, height: int):
@@ -15,14 +20,14 @@ class RectangularRoom:
         self.y1 = y
         self.x2 = x + width
         self.y2 = y + height
-    
+
     @property
     def center(self) -> Tuple[int, int]:
         center_x = int((self.x1 + self.x2) / 2)
         center_y = int((self.y1 + self.y2) / 2)
 
         return center_x, center_y
-    
+
     @property
     def inner(self) -> Tuple[slice, slice]:
         """Return the inner area of this room as a 2D array index."""
@@ -37,7 +42,10 @@ class RectangularRoom:
             and self.y2 >= other.y1
         )
 
-def place_entities(room: RectangularRoom, dungeon: GameMap, maximum_monsters: int, maximum_items: int) -> None:
+
+def place_entities(
+    room: RectangularRoom, dungeon: GameMap, maximum_monsters: int, maximum_items: int
+) -> None:
     number_of_monsters = random.randint(0, maximum_monsters)
     number_of_items = random.randint(0, maximum_items)
 
@@ -59,8 +67,10 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, maximum_monsters: in
             entity_factories.health_potion.spawn(dungeon, x, y)
 
 
-def tunnel_between(start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tuple[int, int]]:
-  
+def tunnel_between(
+    start: Tuple[int, int], end: Tuple[int, int]
+) -> Iterator[Tuple[int, int]]:
+    """Return an L-shaped tunnel between these two points."""
     x1, y1 = start
     x2, y2 = end
     if random.random() < 0.5:  # 50% chance.
@@ -76,15 +86,16 @@ def tunnel_between(start: Tuple[int, int], end: Tuple[int, int]) -> Iterator[Tup
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
         yield x, y
 
+
 def generate_dungeon(
-   max_rooms: int,
-   room_min_size: int,
-   room_max_size: int,
-   map_width: int,
-   map_height: int,
-   max_monsters_per_room: int,
-   max_items_per_room: int,
-   engine: Engine,
+    max_rooms: int,
+    room_min_size: int,
+    room_max_size: int,
+    map_width: int,
+    map_height: int,
+    max_monsters_per_room: int,
+    max_items_per_room: int,
+    engine: Engine,
 ) -> GameMap:
     """Generate a new dungeon map."""
     player = engine.player
@@ -117,7 +128,10 @@ def generate_dungeon(
             # Dig out a tunnel between this room and the previous one.
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
+
         place_entities(new_room, dungeon, max_monsters_per_room, max_items_per_room)
+
         # Finally, append the new room to the list.
         rooms.append(new_room)
+
     return dungeon

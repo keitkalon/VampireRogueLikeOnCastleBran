@@ -37,7 +37,10 @@ def render_bar(
         x=1, y=45, string=f"HP: {current_value}/{maximum_value}", fg=color.bar_text
     )
 
-def render_names_at_mouse_location(console: Console, x: int, y: int, engine: Engine) -> None:
+
+def render_names_at_mouse_location(
+    console: Console, x: int, y: int, engine: Engine
+) -> None:
     mouse_x, mouse_y = engine.mouse_location
 
     names_at_mouse_location = get_names_at_location(

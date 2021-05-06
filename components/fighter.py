@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 import color
 from components.base_component import BaseComponent
 from input_handlers import GameOverEventHandler
@@ -8,8 +10,10 @@ from render_order import RenderOrder
 if TYPE_CHECKING:
     from entity import Actor
 
+
 class Fighter(BaseComponent):
     parent: Actor
+
     def __init__(self, hp: int, defense: int, power: int):
         self.max_hp = hp
         self._hp = hp
@@ -27,7 +31,7 @@ class Fighter(BaseComponent):
             self.die()
 
     def die(self) -> None:
-        if self._hp == 0 and self.parent.ai:
+        if self.engine.player is self.parent:
             death_message = "You died!"
             death_message_color = color.player_die
             self.engine.event_handler = GameOverEventHandler(self.engine)
@@ -42,9 +46,7 @@ class Fighter(BaseComponent):
         self.parent.name = f"remains of {self.parent.name}"
         self.parent.render_order = RenderOrder.CORPSE
 
-        #print(death_message)
         self.engine.message_log.add_message(death_message, death_message_color)
-
 
     def heal(self, amount: int) -> int:
         if self.hp == self.max_hp:

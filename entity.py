@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import copy
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
+
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
@@ -12,8 +14,14 @@ if TYPE_CHECKING:
 
 T = TypeVar("T", bound="Entity")
 
+
 class Entity:
+    """
+    A generic object to represent players, enemies, items, etc.
+    """
+
     parent: Union[GameMap, Inventory]
+
     def __init__(
         self,
         parent: Optional[GameMap] = None,
@@ -25,7 +33,7 @@ class Entity:
         blocks_movement: bool = False,
         render_order: RenderOrder = RenderOrder.CORPSE,
     ):
-        self.x = x 
+        self.x = x
         self.y = y
         self.char = char
         self.color = color
@@ -51,7 +59,7 @@ class Entity:
         return clone
 
     def place(self, x: int, y: int, gamemap: Optional[GameMap] = None) -> None:
-        """Place this entity at a new location.  Handles moving across GameMaps."""
+        """Place this entitiy at a new location.  Handles moving across GameMaps."""
         self.x = x
         self.y = y
         if gamemap:
@@ -62,8 +70,10 @@ class Entity:
             gamemap.entities.add(self)
 
     def move(self, dx: int, dy: int) -> None:
+        # Move the entity by a given amount
         self.x += dx
         self.y += dy
+
 
 class Actor(Entity):
     def __init__(
@@ -92,6 +102,7 @@ class Actor(Entity):
 
         self.fighter = fighter
         self.fighter.parent = self
+
         self.inventory = inventory
         self.inventory.parent = self
 
@@ -99,6 +110,7 @@ class Actor(Entity):
     def is_alive(self) -> bool:
         """Returns True as long as this actor can perform actions."""
         return bool(self.ai)
+
 
 class Item(Entity):
     def __init__(
