@@ -1,5 +1,5 @@
 
- #  Vapire RogueLike in Castle Bran Dungeon
+ #  Vampire RogueLike in Castle Bran Dungeon
 
 ------------
   >**_THE GAME:_**  Is about a hero human  who is travelling through a 
