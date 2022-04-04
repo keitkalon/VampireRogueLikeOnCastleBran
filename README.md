@@ -25,10 +25,48 @@
 ------------
 
 
+## Legend for keyboard usage: <br>
+you are batman
+
+``G   _______________``  you pick from the ground and put in the basket;<br> 
+
+``I   _______________``   see all the goods you have in the basket;<br>
+
+``I + a or b or c… etc ___`` consume one of the goods you have in the basket;<br>
+
+``<    ________________``   get down the stairs;<br>
+
+``>    ________________``  get up the stairs;<br> 
+      
+``C    _________________``   info about batman level;<br>
+
+``/   __________________``   ghost mode;<br>
+
+``V	 _______________`` 	history <br>
+
+``D + a or b or c… etc____``   drop goods from the basket on the floor;<br>
+
+
+## Legend for items identification: # <br>
+``!   ________________``    health;<br>
+``<   ________________``    stairs;<br>
+``V   ________________``    vampires;<br>
+``G   _________________``    Ghionoaie she makes her living on -3 level underground;<br>
+
+
+
+-------------------------------
+
+
 
 **_TO RUN:_**
 
-_To install the game you need to install python 3.9, tcod>=11.13 and numpy>=1.18._
+_To install the game you need to install python 3.10.1 then to install tcod>=12.2.0 and numpy>=1.20.2
+
+```diff 
++ pip install tcod==12.2.0
++ pip install numpy==1.20.2
+```
 
 _Run the main.py file in your terminal (or alternatively in your editor, if possible):_
 
